@@ -68,7 +68,7 @@ Citizen.CreateThread(function()
 		local curPed = PlayerPedId()
 		local curHealth = GetEntityHealth( curPed )
 		SetEntityHealth( curPed, curHealth-2)
-		local curWait = math.random(20,350)
+		local curWait = math.random(10,150)
 		-- this will substract 2hp from the current player, wait 50ms and then add it back, this is to check for hacks that force HP at 200
 		Citizen.Wait(curWait)
 
@@ -76,6 +76,9 @@ Citizen.CreateThread(function()
 			TriggerServerEvent("AntiCheese:HealthFlag", false, curHealth-2, GetEntityHealth( curPed ),curWait )
 		elseif GetEntityHealth(curPed) == curHealth-2 then
 			SetEntityHealth(curPed, GetEntityHealth(curPed)+2)
+		end
+		if GetEntityHealth(curPed) > 400 then
+			TriggerServerEvent("AntiCheese:HealthFlag", false, GetEntityHealth( curPed )-200, GetEntityHealth( curPed ),curWait )
 		end
 
 		if GetPlayerInvincible( PlayerId() ) then -- if the player is invincible, flag him as a cheater and then disable their invincibility
@@ -108,6 +111,7 @@ Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(30000)
 		for _,theWeapon in ipairs(BlacklistedWeapons) do
+			Wait(1)
 			if HasPedGotWeapon(PlayerPedId(),GetHashKey(theWeapon),false) == 1 then
 					RemoveAllPedWeapons(PlayerPedId(),false)
 			end
@@ -134,11 +138,12 @@ end
 
 Citizen.CreateThread(function()
 	while true do
-		Citizen.Wait(0)
+		Citizen.Wait(500)
 		local ped = PlayerPedId()
 		local handle, object = FindFirstObject()
 		local finished = false
 		repeat
+			Wait(1)
 			if IsEntityAttached(object) and DoesEntityExist(object) then
 				if GetEntityModel(object) == GetHashKey("prop_acc_guitar_01") then
 					ReqAndDelete(object, true)

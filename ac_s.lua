@@ -4,6 +4,7 @@ Components = {
 	GodMode = true,
 	Speedhack = true,
 	WeaponBlacklist = true,
+	CustomFlag = true,
 }
 
 --[[
@@ -68,21 +69,18 @@ AddEventHandler("anticheese:kick", function(reason)
 	DropPlayer(source, reason)
 end)
 
-RegisterServerEvent("anticheese:SetComponentStatus")
 AddEventHandler("anticheese:SetComponentStatus", function(component, state)
 	if type(component) == "string" and type(state) == "boolean" then
 		Components[component] = state -- changes the component to the wished status
 	end
 end)
 
-RegisterServerEvent("anticheese:ToggleComponent")
 AddEventHandler("anticheese:ToggleComponent", function(component)
 	if type(component) == "string" then
 		Components[component] = not Components[component]
 	end
 end)
 
-RegisterServerEvent("anticheese:SetAllComponents")
 AddEventHandler("anticheese:SetAllComponents", function(state)
 	if type(state) == "boolean" then
 		for i,theComponent in pairs(Components) do
@@ -142,7 +140,7 @@ Citizen.CreateThread(function()
 		return license, steam
 	end
 
-	RegisterNetEvent('AntiCheese:SpeedFlag')
+	RegisterServerEvent('AntiCheese:SpeedFlag')
 	AddEventHandler('AntiCheese:SpeedFlag', function(rounds, roundm)
 		if Components.Speedhack and not IsPlayerAceAllowed(source,"anticheese.bypass") then
 			license, steam = GetPlayerNeededIdentifiers(source)
@@ -157,7 +155,7 @@ Citizen.CreateThread(function()
 
 
 
-	RegisterNetEvent('AntiCheese:NoclipFlag')
+	RegisterServerEvent('AntiCheese:NoclipFlag')
 	AddEventHandler('AntiCheese:NoclipFlag', function(distance)
 		if Components.Speedhack and not IsPlayerAceAllowed(source,"anticheese.bypass") then
 			license, steam = GetPlayerNeededIdentifiers(source)
@@ -169,8 +167,22 @@ Citizen.CreateThread(function()
 			SendWebhookMessage(webhook,"**Noclip/Teleport!** \n```\nUser:"..name.."\n"..license.."\n"..steam.."\nCaught with "..distance.." units between last checked location\nAnticheat Flags:"..isKnownCount..""..isKnownExtraText.." ```")
 		end
 	end)
+	
+	
+	RegisterServerEvent('AntiCheese:CustomFlag')
+	AddEventHandler('AntiCheese:CustomFlag', function(reason,extrainfo)
+		if Components.CustomFlag and not IsPlayerAceAllowed(source,"anticheese.bypass") then
+			license, steam = GetPlayerNeededIdentifiers(source)
+			name = GetPlayerName(source)
+			if not extrainfo then extrainfo = "no extra informations provided" end
+			isKnown, isKnownCount, isKnownExtraText = WarnPlayer(name,reason)
 
-	RegisterNetEvent('AntiCheese:HealthFlag')
+
+			SendWebhookMessage(webhook,"**"..reason.."** \n```\nUser:"..name.."\n"..license.."\n"..steam.."\n"..extrainfo.."\nAnticheat Flags:"..isKnownCount..""..isKnownExtraText.." ```")
+		end
+	end)
+
+	RegisterServerEvent('AntiCheese:HealthFlag')
 	AddEventHandler('AntiCheese:HealthFlag', function(invincible,oldHealth, newHealth, curWait)
 		if Components.GodMode and not IsPlayerAceAllowed(source,"anticheese.bypass") then
 			license, steam = GetPlayerNeededIdentifiers(source)
@@ -186,7 +198,7 @@ Citizen.CreateThread(function()
 		end
 	end)
 
-	RegisterNetEvent('AntiCheese:JumpFlag')
+	RegisterServerEvent('AntiCheese:JumpFlag')
 	AddEventHandler('AntiCheese:JumpFlag', function(jumplength)
 		if Components.SuperJump and not IsPlayerAceAllowed(source,"anticheese.bypass") then
 			license, steam = GetPlayerNeededIdentifiers(source)
@@ -198,7 +210,7 @@ Citizen.CreateThread(function()
 		end
 	end)
 
-	RegisterNetEvent('AntiCheese:WeaponFlag')
+	RegisterServerEvent('AntiCheese:WeaponFlag')
 	AddEventHandler('AntiCheese:WeaponFlag', function(weapon)
 		if Components.WeaponBlacklist and not IsPlayerAceAllowed(source,"anticheese.bypass") then
 			license, steam = GetPlayerNeededIdentifiers(source)
